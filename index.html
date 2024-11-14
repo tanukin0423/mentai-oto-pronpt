@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>面接練習プログラム</title>
+  <style>
+    body {
+      font-family: 'Hiragino Sans', 'Meiryo', sans-serif;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 800px;
+      max-width: 100%;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #5c6bc0;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #2c3e50;
+      font-weight: bold;
+    }
+
+    select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    select:focus, textarea:focus {
+      outline: none;
+      border-color: #5c6bc0;
+      box-shadow: 0 0 0 2px rgba(92,107,192,0.2);
+    }
+
+    .tips {
+      background-color: #e8f4f8;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 5px solid #4CAF50;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .tips h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      font-size: 1.3em;
+    }
+
+    .tips pre {
+      font-size: 1.1em;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      margin: 10px 0;
+    }
+
+    .speech-input {
+      margin: 20px 0;
+    }
+
+    button {
+      background-color: #5c6bc0;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #3f51b5;
+    }
+
+    button:disabled {
+      background-color: #9e9e9e;
+    }
+
+    .controls {
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 15px;
+    }
+
+    .control-group label {
+      min-width: 60px;
+      margin-bottom: 0;
+    }
+
+    .control-group input[type="range"] {
+      flex: 1;
+    }
+
+    .sample-answer {
+      background-color: #fff3e0;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      display: none;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* 新しいスタイルを追加 */
+    .prompt-section {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .prompt-section h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+
+    .prompt-section pre {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+      white-space: pre-wrap;
+      margin-bottom: 15px;
+      font-family: 'Hiragino Sans', 'Meiryo', monospace;
+    }
+
+    /* 追加のボタンスタイル */
+    .utility-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .utility-button {
+      background-color: #5c6bc0;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    .utility-button:hover {
+      background-color: #3f51b5;
+    }
+
+    @media (max-width: 840px) {
+      .container {
+        padding: 20px;
+      }
+      
+      button {
+        width: 100%;
+        margin-right: 0;
+      }
+      
+      .control-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">面接練習プログラム</div>
+    
+    <label for="question-select">質問を選んでください:</label>
+    <select id="question-select">
+      <option value="1">1. 自己紹介をお願いします</option>
+      <option value="2">2. 志望動機を教えてください</option>
+      <option value="3">3. 学生時代に力を入れたことは何ですか</option>
+      <option value="4">4. あなたの長所と短所を教えてください</option>
+      <option value="5">5. 入社後にやりたい仕事について教えてください</option>
+      <option value="6">6. 5年後、10年後の自分はどうなっていたいですか</option>
+      <option value="7">7. 当社を志望された理由は何ですか</option>
+      <option value="8">8. 他社の選考状況を教えてください</option>
+      <option value="9">9. 困難な経験とその克服方法について教えてください</option>
+      <option value="10">10. 最後に質問はありますか</option>
+    </select>
+
+    <div class="tips" id="answer-tips"></div>
+
+    <button id="show-answer-btn">模範回答を表示/非表示</button>
+    <div id="sample-answer" class="sample-answer"></div>
+
+    <div class="speech-input">
+      <label for="response-text">自分の回答を入力してください（音声入力可能）:</label>
+      <textarea id="response-text" rows="6"></textarea>
+      <div class="button-group">
+        <button id="start-speech-recognition">音声入力開始</button>
+        <button id="stop-speech-recognition">音声入力停止</button>
+      </div>
+    <div class="button-group">
+    <button id="start-playback">回答を読み上げ</button>
+    <button id="stop-playback">読み上げ停止</button>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label for="speed-control">速度:</label>
+        <input type="range" id="speed-control" min="0.5" max="2" step="0.1" value="1">
+        <span id="speed-value">1.0x</span>
+      </div>
+      <div class="control-group">
+        <label for="volume-control">音量:</label>
+        <input type="range" id="volume-control" min="0" max="1" step="0.1" value="1">
+        <span id="volume-value">100%</span>
+      </div>
+    </div>
+
+    <!-- 新しい機能のボタンを追加 -->
+    <div class="utility-buttons">
+      <button class="utility-button" id="download-answers">回答をダウンロード</button>
+      <button class="utility-button" id="create-prompt">AI添削用プロンプトを作成</button>
+      <button class="utility-button" id="copy-prompt">プロンプトをコピー</button>
+    </div>
+
+    <!-- プロンプトセクションを追加 -->
+    <div class="prompt-section" style="display: none;">
+      <h3>AI添削用プロンプト</h3>
+      <pre id="prompt-output"></pre>
+    </div>
+    
+  </div>
+
+</body>
+
+<script>
+    // 既存のJavaScriptコードはそのまま保持
+
+const answerTips = {
+      1: {
+        tips: "・簡潔に1分程度で話す\n・学歴、職歴、特技、趣味などを含める\n・声の大きさやアイコンタクトに注意\n・最後に意気込みを伝える",
+        sample: "はい、私の自己紹介をさせていただきます。○○大学△△学部の◇◇と申します。大学では情報工学を専攻し、特にAIと機械学習について研究してまいりました。学生時代はプログラミング研究会に所属し、チームでアプリケーション開発に取り組んだ経験があります。趣味は読書と水泳で、特に技術書を読むことで常に新しい知識の習得を心がけています。御社では、これまでの経験を活かしながら、さらなる成長を目指して精一杯頑張りたいと考えております。どうぞよろしくお願いいたします。"
+      },
+      2: {
+        tips: "・企業研究に基づいた具体的な理由を述べる\n・企業の理念や価値観との共感を示す\n・自身のスキルや経験が活かせる点を強調\n・将来のビジョンも含める",
+        sample: "私が御社を志望した理由は、主に3つあります。1つ目は、御社の「技術革新を通じた社会貢献」という企業理念に強く共感したからです。2つ目は、御社が推進している○○事業が、私が大学で研究してきた分野と密接に関連しているからです。最後に、御社の社員教育制度の充実度です。特に若手社員の育成に力を入れている点に魅力を感じました。これらの理由から、私は御社で働くことで、自己成長と社会貢献の両方を実現できると考えております。"
+      },
+      3: {
+        tips: "・具体的なエピソードを用意する\n・その経験で得られた成果や学びを明確に\n・仕事との関連性を意識する\n・数値化できる実績があれば含める",
+        sample: "学生時代に最も力を入れたのは、プログラミング研究会での活動です。特に印象に残っているのは、3年次に取り組んだ地域の高齢者向け買い物支援アプリの開発プロジェクトです。10名のチームのリーダーとして、要件定義から実装、テストまでを担当し、半年かけて完成させました。このプロジェクトを通じて、チームマネジメントの難しさと重要性を学び、また技術面でも大きく成長できました。最終的にこのアプリは地域の100名以上の方々に利用していただき、実際の社会課題解決に貢献できた経験は、私の大きな自信となっています。"
+      },
+      4: {
+        tips: "・長所は具体的なエピソードと共に説明\n・短所は改善への取り組みも含める\n・職務に関連する特性を選ぶ\n・誠実に答える",
+        sample: "私の長所は、粘り強く物事に取り組む姿勢です。例えば、大学での卒業研究では、実験が何度も失敗しましたが、原因を一つずつ検証し、最終的に成功に導くことができました。一方、短所は完璧を求めすぎるあまり、意思決定に時間がかかってしまうことです。この点については、重要度に応じて締切を設定し、計画的に進めることで改善を図っています。また、チームでの作業の際は、早めに相談することで、より効率的な判断ができるよう心がけています。"
+      },
+      5: {
+        tips: "・企業の事業内容を踏まえて具体的に話す\n・自身のスキルや経験が活かせる分野に言及\n・意欲と成長への期待を示す\n・現実的な目標設定を心がける",
+        sample: "入社後は、まず御社の基幹事業である○○システムの開発チームで、基礎から実践的なスキルを習得したいと考えています。私は大学でJavaとPythonを中心に学んできましたので、その知識を活かしながら、実務で必要となる技術を着実に身につけていきたいと思います。特に、御社が力を入れているAI技術の実装に携わり、より効率的なシステム開発に貢献したいと考えています。また、将来的にはプロジェクトリーダーとして、チームを牽引できる人材に成長したいと思います。"
+      },
+      6: {
+        tips: "・具体的かつ現実的な目標を設定\n・会社の将来性と自身のキャリアプランを結びつける\n・段階的な成長プランを示す\n・熱意と意欲を伝える",
+        sample: "5年後には、システム開発のスペシャリストとして、プロジェクトの中核を担える人材になっていたいと考えています。特に、御社が注力している○○分野において、技術力と経験を積み、後輩の指導もできる立場を目指します。10年後には、その経験を活かしてプロジェクトマネージャーとして、大規模な開発案件を任せていただけるよう、日々研鑽を積んでいきたいと思います。また、グローバル案件にも携わりたいと考えており、そのために社内の語学研修なども積極的に活用していきたいと考えています。"
+      },
+      7: {
+        tips: "・企業の特徴や強みを具体的に言及\n・自身の価値観との適合性を示す\n・他社との差別化要因を説明\n・誠実な態度で回答",
+        sample: "御社を志望した理由は、主に3点あります。第一に、業界内でのイノベーティブな取り組みです。特に○○技術の実用化において、業界をリードする存在である点に強く惹かれました。第二に、社員の成長を重視する企業文化です。年間100時間以上の研修時間の確保や、海外派遣制度など、人材育成に対する積極的な投資に魅力を感じました。第三に、「技術で社会に貢献する」という企業理念です。この理念は私自身の価値観と合致しており、御社で働くことで、社会により大きな価値を提供できると考えています。"
+      },
+      8: {
+        tips: "・誠実に現状を説明\n・志望度の高さを伝える\n・具体的な数値は控えめに\n・ポジティブな態度で回答",
+        sample: "現在、情報システム業界を中心に数社に応募しており、選考を進めていただいています。ただし、御社は私の第一志望であり、御社での仕事を通じて、キャリアを築いていきたいと考えています。特に御社の○○事業には大変興味があり、この分野で精一杯貢献したいという思いが強くあります。そのため、御社の選考に最も力を入れて臨んでおります。"
+      },
+      9: {
+        tips: "・具体的なエピソードを選ぶ\n・問題解決のプロセスを説明\n・学んだ教訓を強調\n・前向きな姿勢を示す",
+        sample: "最も困難だったのは、大学3年次のプログラミングコンテストでの経験です。5人チームのリーダーとして参加しましたが、メンバー間での技術力の差や、コミュニケーション不足により、プロジェクトが予定通り進まない状況に直面しました。この問題を解決するため、まずチーム内で週2回の定例ミーティングを設定し、進捗の共有と課題の早期発見に努めました。また、技術力の差を補うため、得意分野を活かした役割分担と、相互学習の時間を設けました。結果として、チームワークが改善され、コンテストでは入賞を果たすことができました。"
+      },
+      10: {
+        tips: "・事前に企業研究を行い、質問を準備\n・積極性と意欲を示す質問をする\n・具体的で建設的な質問を心がける\n・相手の時間を考慮する",
+        sample: "はい、2点質問させていただきたいと思います。1点目は、入社後の研修制度についてです。特に技術研修の具体的な内容や期間について、詳しくお聞かせいただければと思います。2点目は、御社が今後注力していきたい事業分野や技術についてです。中長期的な展望をお伺いできればと思います。これらの点について、お話しいただけますでしょうか。"
+      }
+    };
+
+    // DOM要素の取得
+    const questionSelect = document.getElementById('question-select');
+    const answerTipsElement = document.getElementById('answer-tips');
+    const showAnswerBtn = document.getElementById('show-answer-btn');
+    const sampleAnswerElement = document.getElementById('sample-answer');
+    const responseText = document.getElementById('response-text');
+    const speedControl = document.getElementById('speed-control');
+    const volumeControl = document.getElementById('volume-control');
+    const speedValue = document.getElementById('speed-value');
+    const volumeValue = document.getElementById('volume-value');
+    const startPlaybackBtn = document.getElementById('start-playback');
+    const stopPlaybackBtn = document.getElementById('stop-playback');
+    const startSpeechRecognitionBtn = document.getElementById('start-speech-recognition');
+    const stopSpeechRecognitionBtn = document.getElementById('stop-speech-recognition');
+
+    // 音声合成の設定
+    let speechSynthesis = window.speechSynthesis;
+    let speechUtterance = null;
+
+    // 音声認識の設定
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ja-JP';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    // 質問選択時の処理
+    questionSelect.addEventListener('change', () => {
+      const selectedQuestion = questionSelect.value;
+      const questionData = answerTips[selectedQuestion];
+      
+      answerTipsElement.innerHTML = `
+        <h3>答え方のポイント:</h3>
+        <pre>${questionData.tips}</pre>
+      `;
+      
+      sampleAnswerElement.textContent = questionData.sample;
+      sampleAnswerElement.style.display = 'none';
+    });
+     // 新しい機能を追加
+     const downloadAnswersBtn = document.getElementById('download-answers');
+    const createPromptBtn = document.getElementById('create-prompt');
+    const copyPromptBtn = document.getElementById('copy-prompt');
+    const promptSection = document.querySelector('.prompt-section');
+    const promptOutput = document.getElementById('prompt-output');
+
+    // ダウンロード機能
+    downloadAnswersBtn.addEventListener('click', () => {
+      const answers = responseText.value;
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const blob = new Blob([answers], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `interview-answers-${timestamp}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+    // 共通の設定関数を追加（スクリプトの先頭部分に追加）
+function setupGuidance(questionData) {
+  // Tips領域のHTML更新
+  answerTipsElement.innerHTML = `
+    <h3>答え方のポイント:</h3>
+    <pre>${questionData.tips}</pre>
+    <div class="guidance-controls">
+      <button id="start-guidance">ガイダンス開始</button>
+      <button id="stop-guidance" disabled>ガイダンス停止</button>
+      <div class="speed-control-group">
+        <label for="guidance-speed">読み上げ速度:</label>
+        <input type="range" id="guidance-speed" min="0.5" max="2" step="0.1" value="1">
+        <span id="guidance-speed-value">1.0x</span>
+      </div>
+    </div>
+  `;
+
+  // 模範回答の更新
+  sampleAnswerElement.textContent = questionData.sample;
+  sampleAnswerElement.style.display = 'none';
+
+  // ガイダンス関連の要素を取得
+  const startGuidanceBtn = document.getElementById('start-guidance');
+  const stopGuidanceBtn = document.getElementById('stop-guidance');
+  const guidanceSpeed = document.getElementById('guidance-speed');
+  const guidanceSpeedValue = document.getElementById('guidance-speed-value');
+  let guidanceUtterance = null;
+
+  // 速度コントロールのイベントリスナー
+  guidanceSpeed.addEventListener('input', () => {
+    const speed = guidanceSpeed.value;
+    guidanceSpeedValue.textContent = `${speed}x`;
+    if (guidanceUtterance) {
+      guidanceUtterance.rate = speed;
+    }
+  });
+
+  // ガイダンス開始ボタンのイベントリスナー
+  startGuidanceBtn.addEventListener('click', () => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+
+    guidanceUtterance = new SpeechSynthesisUtterance(questionData.tips);
+    guidanceUtterance.lang = 'ja-JP';
+    guidanceUtterance.rate = guidanceSpeed.value;
+
+    guidanceUtterance.onend = () => {
+      startGuidanceBtn.disabled = false;
+      stopGuidanceBtn.disabled = true;
+    };
+
+    speechSynthesis.speak(guidanceUtterance);
+    startGuidanceBtn.disabled = true;
+    stopGuidanceBtn.disabled = false;
+  });
+
+  // ガイダンス停止ボタンのイベントリスナー
+  stopGuidanceBtn.addEventListener('click', () => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+      startGuidanceBtn.disabled = false;
+      stopGuidanceBtn.disabled = true;
+    }
+  });
+}
+
+// 初期化時の処理
+window.addEventListener('load', () => {
+  questionSelect.value = '1';
+  const questionData = answerTips[1];
+  setupGuidance(questionData);
+  stopPlaybackBtn.disabled = true;
+  stopSpeechRecognitionBtn.disabled = true;
+});
+
+// 質問選択時の処理
+questionSelect.addEventListener('change', () => {
+  const selectedQuestion = questionSelect.value;
+  const questionData = answerTips[selectedQuestion];
+  setupGuidance(questionData);
+});
+    // プロンプト作成機能
+    createPromptBtn.addEventListener('click', () => {
+      const answers = responseText.value;
+      const selectedQuestion = questionSelect.options[questionSelect.selectedIndex].text;
+      let promptContent = '面接回答の添削をお願いします。\n\n';
+      
+      promptContent += '質問：\n';
+      promptContent += selectedQuestion + '\n\n';
+      
+      promptContent += '以下の点に注目して添削してください：\n';
+      promptContent += '1. 回答の論理性と構成\n';
+      promptContent += '2. 具体例の適切な使用\n';
+      promptContent += '3. 面接官への印象（積極性、誠実さ等）\n';
+      promptContent += '4. 言葉遣いとビジネスマナー\n';
+      promptContent += '5. 改善点と具体的なアドバイス\n\n';
+
+      promptContent += '回答内容：\n';
+      promptContent += answers + '\n\n';
+
+      promptContent += '以下の形式で添削をお願いします：\n';
+      promptContent += '✅ 良い点\n';
+      promptContent += '❌ 改善点\n';
+      promptContent += '💡 具体的なアドバイス\n';
+      promptContent += '📝 模範回答例\n';
+
+      promptOutput.textContent = promptContent;
+      promptSection.style.display = 'block';
+    });
+
+    // プロンプトコピー機能
+    copyPromptBtn.addEventListener('click', () => {
+      const promptText = promptOutput.textContent;
+      navigator.clipboard.writeText(promptText).then(() => {
+        alert('プロンプトをクリップボードにコピーしました。');
+      }).catch(err => {
+        console.error('クリップボードへのコピーに失敗しました:', err);
+      });
+    });
+
+    // 模範回答の表示/非表示
+    showAnswerBtn.addEventListener('click', () => {
+      sampleAnswerElement.style.display = 
+        sampleAnswerElement.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // 音声入力の開始
+    startSpeechRecognitionBtn.addEventListener('click', () => {
+      responseText.value = '';
+      recognition.start();
+      startSpeechRecognitionBtn.disabled = true;
+      stopSpeechRecognitionBtn.disabled = false;
+    });
+
+    // 音声入力の停止
+    stopSpeechRecognitionBtn.addEventListener('click', () => {
+      recognition.stop();
+      startSpeechRecognitionBtn.disabled = false;
+      stopSpeechRecognitionBtn.disabled = true;
+    });
+
+    // 音声認識結果の処理
+    recognition.onresult = (event) => {
+      let interimTranscript = '';
+      let finalTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
+      responseText.value = finalTranscript + interimTranscript;
+    };
+
+    // 速度とボリュームの制御
+    speedControl.addEventListener('input', () => {
+      const speed = speedControl.value;
+      speedValue.textContent = `${speed}x`;
+      if (speechUtterance) {
+        speechUtterance.rate = speed;
+      }
+    });
+
+    volumeControl.addEventListener('input', () => {
+      const volume = volumeControl.value;
+      volumeValue.textContent = `${Math.round(volume * 100)}%`;
+      if (speechUtterance) {
+        speechUtterance.volume = volume;
+      }
+    });
+
+    // 回答の読み上げ開始
+    startPlaybackBtn.addEventListener('click', () => {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+
+      const text = responseText.value;
+      if (text) {
+        speechUtterance = new SpeechSynthesisUtterance(text);
+        speechUtterance.lang = 'ja-JP';
+        speechUtterance.rate = speedControl.value;
+        speechUtterance.volume = volumeControl.value;
+
+        speechUtterance.onend = () => {
+          startPlaybackBtn.disabled = false;
+          stopPlaybackBtn.disabled = true;
+        };
+
+        speechSynthesis.speak(speechUtterance);
+        startPlaybackBtn.disabled = true;
+        stopPlaybackBtn.disabled = false;
+      }
+    });
+
+    // 読み上げ停止
+    stopPlaybackBtn.addEventListener('click', () => {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+        startPlaybackBtn.disabled = false;
+        stopPlaybackBtn.disabled = true;
+      }
+    });
+
+    // エラーハンドリング
+    recognition.onerror = (event) => {
+      console.error('音声認識エラー:', event.error);
+      startSpeechRecognitionBtn.disabled = false;
+      stopSpeechRecognitionBtn.disabled = true;
+    };
+
+    // 音声認識終了時の処理
+    recognition.onend = () => {
+      startSpeechRecognitionBtn.disabled = false;
+      stopSpeechRecognitionBtn.disabled = true;
+    };
+    // 質問選択時の処理を修正
+  
+  </script>
+</body>
+</html>
