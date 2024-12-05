@@ -218,7 +218,7 @@
       <option value="4">4. あなたの長所と短所を教えてください</option>
       <option value="5">5. 入社後にやりたい仕事について教えてください</option>
       <option value="6">6. 5年後、10年後の自分はどうなっていたいですか</option>
-      <option value="7">7. 当社を志望された理由は何ですか</option>
+      <option value="7">7. 自己PRをしてください。</option>
       <option value="8">8. 他社の選考状況を教えてください</option>
       <option value="9">9. 困難な経験とその克服方法について教えてください</option>
       <option value="10">10. 最後に質問はありますか</option>
@@ -300,8 +300,8 @@ const answerTips = {
         sample: "5年後には、システム開発のスペシャリストとして、プロジェクトの中核を担える人材になっていたいと考えています。特に、御社が注力している○○分野において、技術力と経験を積み、後輩の指導もできる立場を目指します。10年後には、その経験を活かしてプロジェクトマネージャーとして、大規模な開発案件を任せていただけるよう、日々研鑽を積んでいきたいと思います。また、グローバル案件にも携わりたいと考えており、そのために社内の語学研修なども積極的に活用していきたいと考えています。"
       },
       7: {
-        tips: "・企業の特徴や強みを具体的に言及\n・自身の価値観との適合性を示す\n・他社との差別化要因を説明\n・誠実な態度で回答",
-        sample: "御社を志望した理由は、主に3点あります。第一に、業界内でのイノベーティブな取り組みです。特に○○技術の実用化において、業界をリードする存在である点に強く惹かれました。第二に、社員の成長を重視する企業文化です。年間100時間以上の研修時間の確保や、海外派遣制度など、人材育成に対する積極的な投資に魅力を感じました。第三に、「技術で社会に貢献する」という企業理念です。この理念は私自身の価値観と合致しており、御社で働くことで、社会により大きな価値を提供できると考えています。"
+        tips: "・具体的な強みを一言で簡潔に話す。\n・数値や成果を用いて客観的に示す\n・その経験から得た学びや成長を明確に述べる\n・企業のニーズとの関連性を示す",
+    　　sample: "私の最大の強みは、リーダーシップです。特に、大学3年次に参加した国際ボランティア活動での経験が、この能力を大きく向上させました。6ヶ月間、5カ国からの20名の学生と共に活動し、言語や文化の壁を乗り越えてプロジェクトを成功に導きました。具体的には、地域の環境保護活動において、私がリーダーとなり、メンバー間の意見の相違を調整し、地域住民との対話を重ねた結果、植樹本数を当初目標の150%である3000本まで増やすことができました。この経験を通じて、多様な背景を持つ人々と効果的にコミュニケーションを取る能力と、目標達成に向けて粘り強く取り組む姿勢を身につけました。御社のグローバルな事業展開において、この経験と能力を活かし、国際的なチームの中で円滑なコミュニケーションを図りながら、プロジェクトを成功に導くことができると確信しています。"
       },
       8: {
         tips: "・誠実に現状を説明\n・志望度の高さを伝える\n・具体的な数値は控えめに\n・ポジティブな態度で回答",
@@ -377,88 +377,7 @@ const answerTips = {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     });
-    // 共通の設定関数を追加（スクリプトの先頭部分に追加）
-function setupGuidance(questionData) {
-  // Tips領域のHTML更新
-  answerTipsElement.innerHTML = `
-    <h3>答え方のポイント:</h3>
-    <pre>${questionData.tips}</pre>
-    <div class="guidance-controls">
-      <button id="start-guidance">ガイダンス開始</button>
-      <button id="stop-guidance" disabled>ガイダンス停止</button>
-      <div class="speed-control-group">
-        <label for="guidance-speed">読み上げ速度:</label>
-        <input type="range" id="guidance-speed" min="0.5" max="2" step="0.1" value="1">
-        <span id="guidance-speed-value">1.0x</span>
-      </div>
-    </div>
-  `;
 
-  // 模範回答の更新
-  sampleAnswerElement.textContent = questionData.sample;
-  sampleAnswerElement.style.display = 'none';
-
-  // ガイダンス関連の要素を取得
-  const startGuidanceBtn = document.getElementById('start-guidance');
-  const stopGuidanceBtn = document.getElementById('stop-guidance');
-  const guidanceSpeed = document.getElementById('guidance-speed');
-  const guidanceSpeedValue = document.getElementById('guidance-speed-value');
-  let guidanceUtterance = null;
-
-  // 速度コントロールのイベントリスナー
-  guidanceSpeed.addEventListener('input', () => {
-    const speed = guidanceSpeed.value;
-    guidanceSpeedValue.textContent = `${speed}x`;
-    if (guidanceUtterance) {
-      guidanceUtterance.rate = speed;
-    }
-  });
-
-  // ガイダンス開始ボタンのイベントリスナー
-  startGuidanceBtn.addEventListener('click', () => {
-    if (speechSynthesis.speaking) {
-      speechSynthesis.cancel();
-    }
-
-    guidanceUtterance = new SpeechSynthesisUtterance(questionData.tips);
-    guidanceUtterance.lang = 'ja-JP';
-    guidanceUtterance.rate = guidanceSpeed.value;
-
-    guidanceUtterance.onend = () => {
-      startGuidanceBtn.disabled = false;
-      stopGuidanceBtn.disabled = true;
-    };
-
-    speechSynthesis.speak(guidanceUtterance);
-    startGuidanceBtn.disabled = true;
-    stopGuidanceBtn.disabled = false;
-  });
-
-  // ガイダンス停止ボタンのイベントリスナー
-  stopGuidanceBtn.addEventListener('click', () => {
-    if (speechSynthesis.speaking) {
-      speechSynthesis.cancel();
-      startGuidanceBtn.disabled = false;
-      stopGuidanceBtn.disabled = true;
-    }
-  });
-}
-
-// 初期化時の処理
-window.addEventListener('load', () => {
-  questionSelect.value = '1';
-  const questionData = answerTips[1];
-  setupGuidance(questionData);
-  stopPlaybackBtn.disabled = true;
-  stopSpeechRecognitionBtn.disabled = true;
-});
-
-// 質問選択時の処理
-questionSelect.addEventListener('change', () => {
-  const selectedQuestion = questionSelect.value;
-  const questionData = answerTips[selectedQuestion];
-  setupGuidance(questionData);
-});
     // プロンプト作成機能
     createPromptBtn.addEventListener('click', () => {
       const answers = responseText.value;
@@ -586,6 +505,70 @@ questionSelect.addEventListener('change', () => {
       }
     });
 
+    window.addEventListener('load', () => {
+  questionSelect.value = '1';
+  const questionData = answerTips[1];
+  answerTipsElement.innerHTML = `
+    <h3>答え方のポイント:</h3>
+    <pre>${questionData.tips}</pre>
+    <div class="guidance-controls">
+      <button id="start-guidance">ガイダンス開始</button>
+      <button id="stop-guidance" disabled>ガイダンス停止</button>
+      <div class="speed-control-group">
+        <label for="guidance-speed">読み上げ速度:</label>
+        <input type="range" id="guidance-speed" min="0.5" max="2" step="0.1" value="1">
+        <span id="guidance-speed-value">1.0x</span>
+      </div>
+    </div>
+  `;
+  sampleAnswerElement.textContent = questionData.sample;
+  stopPlaybackBtn.disabled = true;
+  stopSpeechRecognitionBtn.disabled = true;
+
+  // 初期表示時のガイダンス機能セットアップ
+  const startGuidanceBtn = document.getElementById('start-guidance');
+  const stopGuidanceBtn = document.getElementById('stop-guidance');
+  const guidanceSpeed = document.getElementById('guidance-speed');
+  const guidanceSpeedValue = document.getElementById('guidance-speed-value');
+  let guidanceUtterance = null;
+
+  // 以下、質問選択時と同じイベントリスナーの設定
+  guidanceSpeed.addEventListener('input', () => {
+    const speed = guidanceSpeed.value;
+    guidanceSpeedValue.textContent = `${speed}x`;
+    if (guidanceUtterance) {
+      guidanceUtterance.rate = speed;
+    }
+  });
+
+  startGuidanceBtn.addEventListener('click', () => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+
+    guidanceUtterance = new SpeechSynthesisUtterance(questionData.tips);
+    guidanceUtterance.lang = 'ja-JP';
+    guidanceUtterance.rate = guidanceSpeed.value;
+
+    guidanceUtterance.onend = () => {
+      startGuidanceBtn.disabled = false;
+      stopGuidanceBtn.disabled = true;
+    };
+
+    speechSynthesis.speak(guidanceUtterance);
+    startGuidanceBtn.disabled = true;
+    stopGuidanceBtn.disabled = false;
+  });
+
+  stopGuidanceBtn.addEventListener('click', () => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+      startGuidanceBtn.disabled = false;
+      stopGuidanceBtn.disabled = true;
+    }
+  });
+});
+
     // エラーハンドリング
     recognition.onerror = (event) => {
       console.error('音声認識エラー:', event.error);
@@ -599,7 +582,72 @@ questionSelect.addEventListener('change', () => {
       stopSpeechRecognitionBtn.disabled = true;
     };
     // 質問選択時の処理を修正
+    questionSelect.addEventListener('change', () => {
+  const selectedQuestion = questionSelect.value;
+  const questionData = answerTips[selectedQuestion];
   
+  answerTipsElement.innerHTML = `
+    <h3>答え方のポイント:</h3>
+    <pre>${questionData.tips}</pre>
+    <div class="guidance-controls">
+      <button id="start-guidance">ガイダンス開始</button>
+      <button id="stop-guidance" disabled>ガイダンス停止</button>
+      <div class="speed-control-group">
+        <label for="guidance-speed">読み上げ速度:</label>
+        <input type="range" id="guidance-speed" min="0.5" max="2" step="0.1" value="1">
+        <span id="guidance-speed-value">1.0x</span>
+      </div>
+    </div>
+  `;
+      
+       sampleAnswerElement.textContent = questionData.sample;
+  sampleAnswerElement.style.display = 'none';
+
+  // ガイダンス関連の要素を取得
+  const startGuidanceBtn = document.getElementById('start-guidance');
+  const stopGuidanceBtn = document.getElementById('stop-guidance');
+  const guidanceSpeed = document.getElementById('guidance-speed');
+  const guidanceSpeedValue = document.getElementById('guidance-speed-value');
+  let guidanceUtterance = null;
+
+  // 速度コントロールのイベントリスナー
+  guidanceSpeed.addEventListener('input', () => {
+    const speed = guidanceSpeed.value;
+    guidanceSpeedValue.textContent = `${speed}x`;
+    if (guidanceUtterance) {
+      guidanceUtterance.rate = speed;
+    }
+  });
+
+      // ガイダンス開始ボタンのイベントリスナー
+      startGuidanceBtn.addEventListener('click', () => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+    }
+
+    guidanceUtterance = new SpeechSynthesisUtterance(questionData.tips);
+    guidanceUtterance.lang = 'ja-JP';
+    guidanceUtterance.rate = guidanceSpeed.value;
+
+    guidanceUtterance.onend = () => {
+      startGuidanceBtn.disabled = false;
+      stopGuidanceBtn.disabled = true;
+    };
+
+    speechSynthesis.speak(guidanceUtterance);
+    startGuidanceBtn.disabled = true;
+    stopGuidanceBtn.disabled = false;
+  });
+
+  // ガイダンス停止ボタンのイベントリスナー
+  stopGuidanceBtn.addEventListener('click', () => {
+    if (speechSynthesis.speaking) {
+      speechSynthesis.cancel();
+      startGuidanceBtn.disabled = false;
+      stopGuidanceBtn.disabled = true;
+    }
+  });
+});
   </script>
 </body>
 </html>
