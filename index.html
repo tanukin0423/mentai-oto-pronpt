@@ -401,6 +401,7 @@
         // 音声認識の設定
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition = null; // recognitionオブジェクトは後で初期化
+        let currentRecognitionText = ''; // 確定した音声認識結果を保持する変数
 
         // カスタムメッセージ表示関数
         function showCustomMessage(message, type = 'success', duration = 3000) {
@@ -508,17 +509,20 @@
 
                 recognition.onresult = (event) => {
                     let interimTranscript = '';
-                    let finalTranscript = '';
+                    let finalTranscriptSegment = ''; // 今回のイベントで確定した部分
 
                     for (let i = event.resultIndex; i < event.results.length; i++) {
                         const transcript = event.results[i][0].transcript;
                         if (event.results[i].isFinal) {
-                            finalTranscript += transcript;
+                            finalTranscriptSegment += transcript; // 確定した部分を追加
                         } else {
-                            interimTranscript += transcript;
+                            interimTranscript += transcript; // 未確定部分を追加
                         }
                     }
-                    responseText.value = finalTranscript + interimTranscript;
+                    // 確定した部分を累積テキストに追加
+                    currentRecognitionText += finalTranscriptSegment;
+                    // テキストエリアには確定部分 + 未確定部分を表示
+                    responseText.value = currentRecognitionText + interimTranscript;
                 };
 
                 recognition.onerror = (event) => {
@@ -565,6 +569,7 @@
         startSpeechRecognitionBtn.addEventListener('click', () => {
             if (recognition) {
                 responseText.value = ''; // 開始時にテキストエリアをクリア
+                currentRecognitionText = ''; // ★確定済みテキストもリセット
                 speechErrorMessage.style.display = 'none'; // エラーメッセージを非表示に
                 recognition.start();
                 startSpeechRecognitionBtn.disabled = true;
